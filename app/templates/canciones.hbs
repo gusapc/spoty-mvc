@@ -1,0 +1,67 @@
+<div class="container" style="padding-top: 15px;">
+	{{!-- Si el modelo no está vacio (String, Array, null)--}}
+	{{#if model}}
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Título</th>
+					<th>Artista</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+			{{!-- Cambia de controlador --}}
+			{{#each cancion in model itemController="cancion"}}
+				<tr>
+					<td>{{model.id}}</td>
+						{{#if cancion.isEditing}}
+							<td>{{input type="text" class="form-control" value=cancion.model.titulo}}</td>
+							<td>{{input type="text" class="form-control" value=cancion.model.artista}}</td>
+						{{else}}
+							<td>{{cancion.model.titulo}}</td>
+							<td>{{cancion.model.artista}}</td>
+						{{/if}}
+					<td>
+						<button class="btn btn-danger btn-sm" {{action "eliminarCancion"}}>Eliminar</button>
+						<button class="btn btn-primary btn-sm"{{action "editarCancion"}}>{{cancion.text}}</button>
+					</td>
+				</tr>
+			{{/each}}
+			</tbody>
+		</table>
+	{{else}}
+		<h2 style="text-align: center;">No hay canciones</h2>
+	{{/if}}
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Agregar Canción</h3>
+		</div>
+
+		<div class="panel-body">
+			{{!-- Se sobreescribe el evento "onsubmit" del formulario --}}
+			<form class="form-horizontal" {{action "crearCancion" on="submit"}}>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Título</label>
+					<div class="col-sm-10">
+						{{!-- value=nombreCancion => nombreCancion se encuentra dentro del controlador CancionesController --}}
+						{{input type="text" class="form-control" placeholder="Nombre" value=nombreCancion}}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Artista</label>
+					<div class="col-sm-10">
+						{{!-- value=nombreArtista => nombreArtista se encuentra dentro del controlador CancionesController --}}
+						{{input type="text" class="form-control" placeholder="Artista" value=nombreArtista}}
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						{{input type="submit" class="btn btn-primary" value="Guardar"}}
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
