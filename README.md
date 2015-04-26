@@ -156,3 +156,17 @@ CancionController = Ember.Controller.extend
 
 `export default CancionController`
 ```
+
+####  [app/initializers/inflectors-initializer.coffee](https://github.com/arnaldo2792/spoty-mvc/blob/master/app/initializers/inflectors-initializer.coffee)
+
+Aquí definimos que vamos a renombrar `cancion` por su plural `canciones`
+
+```coffeescript
+`import Ember from 'ember'`
+InflectorInitializer = 
+	name: 'inflections'
+	initialize: ->
+		inflector = Ember.Inflector.inflector
+		inflector.irregular 'cancion', 'canciones'
+`export default InflectorInitializer`
+```
