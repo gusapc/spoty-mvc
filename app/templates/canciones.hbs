@@ -14,12 +14,12 @@
 			{{!-- Cambia de controlador --}}
 			{{#each cancion in model itemController="cancion"}}
 				<tr>
-					<td>{{model.id}}</td>
+					<td>{{cancion.model.id}}</td>
 						{{#if cancion.isEditing}}
-							<td>{{input type="text" class="form-control" value=cancion.model.titulo}}</td>
+							<td>{{input type="text" class="form-control" value=cancion.model.nombre}}</td>
 							<td>{{input type="text" class="form-control" value=cancion.model.artista}}</td>
 						{{else}}
-							<td>{{cancion.model.titulo}}</td>
+							<td>{{cancion.model.nombre}}</td>
 							<td>{{cancion.model.artista}}</td>
 						{{/if}}
 					<td>

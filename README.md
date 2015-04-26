@@ -22,17 +22,18 @@ Estos son los archivos a modificar, pueden dar click en el nombre del archivo pa
 
 Este archivo lo renombramos a `router.coffee` y cambiamos la sintaxis a coffeescript
 
-    `import Ember from 'ember'`
-    `import config from './config/environment'`
+```coffeescript
+`import Ember from 'ember'`
+`import config from './config/environment'`
 
-	Router = Ember.Router.extend
-		location: config.locationType
+Router = Ember.Router.extend
+	location: config.locationType
 	
+Router.map ()->
+	@route 'canciones', path: '/'
 
-	Router.map ()->
-		@route 'canciones', path: '/'
-
-	`export default Router`
+`export default Router`
+```
 
 En este archivo se definen las rutas para la aplicación, para mas información acerca de cómo declarar las rutas den click [aquí](http://guides.emberjs.com/v1.10.0/routing/defining-your-routes/)
 
@@ -40,46 +41,47 @@ En este archivo se definen las rutas para la aplicación, para mas información 
 
 En este archivo se define qué tipo de adapter se utilizará para la aplicación, si no clonaron el repositorio y solo siguen esto se darán cuenta de que no tienen el directorio adapters, lo tienen que crear y luego al archivo
 
-	`import DS from 'ember-data'`
+```coffeescript
+`import DS from 'ember-data'`
 
-	ApplicationAdapter = DS.FixtureAdapter.extend()
+ApplicationAdapter = DS.ActiveModelAdapter.extend
+	host: 'http://elservidordeomac.com:supuerto' # Lo cambian para que funcione con su puerto de rails
 
-	`export default ApplicationAdapter`
+`export default ApplicationAdapter`
+
+```
 
 Si quieren saber más sobre los tipos de adapters que existen hagan click [aquí](http://guides.emberjs.com/v1.10.0/models/customizing-adapters/)
 
 #### [app/models/cancion.coffee](https://github.com/arnaldo2792/spoty-mvc/blob/master/app/models/cancion.coffee)
 
-Este archivo contiene la difinición del modelo `cancion`, como utilizamos el `FixtureAdapter`, no podemos poner lo siguiente:
-	
-	Cancion.FIXTURES = []
+Este archivo contiene la difinición del modelo `cancion`
 
-Esto causa un error debido a cómo funciona `ember-cli`, para solucionarlo hacemos lo siguiente:
+```coffeescript
 
-	`import DS from 'ember-data'`
+`import DS from 'ember-data'`
 
-	Cancion = DS.Model.extend
-		nombre: DS.attr('string')
-		artista: DS.attr('string')
-	
-	Cancion.reopenClass
-		FIXTURES: []
+Cancion = DS.Model.extend
+	nombre: DS.attr('string')
+	artista: DS.attr('string')
 
-	`export default Cancion`
-	
-Información acerca de `reopenClass` [aquí](http://guides.emberjs.com/v1.10.0/object-model/reopening-classes-and-instances/)
+`export default Cancion`
+```
 
 #### [app/routes/canciones.coffee](https://github.com/arnaldo2792/spoty-mvc/blob/master/app/routes/canciones.coffee)
 
 Aquí definimos la ruta para `/canciones`, estableciendo como modelo a todas las canciones que existan en memoria
 
-	`import Ember from 'ember'`
+```coffeescript
 
-	CancionesRoute = Ember.Route.extend
-		model: ->
-			@store.find('cancion')
+`import Ember from 'ember'`
+
+CancionesRoute = Ember.Route.extend
+	model: ->
+		@store.find('cancion')
 		
-	`export default CancionesRoute`
+`export default CancionesRoute`
+```
 	
 Información acerca de los hooks del route [aquí](http://guides.emberjs.com/v1.10.0/routing/specifying-a-routes-model/)
 
@@ -87,38 +89,37 @@ Información acerca de los hooks del route [aquí](http://guides.emberjs.com/v1.
 
 Este es controlador para la ruta `/canciones`
 
-	`import Ember from 'ember'`
+```coffeescript
+`import Ember from 'ember'`
 
-	CancionesController = Ember.Controller.extends
-		nombreCancion: ''
-		nombreArtista: ''
-		currentId: 1
-	
-		tituloVacio: Ember.computed.empty('nombreCancion')
-		artistaVacio: Ember.computed.empty('nombreArtista')
-	
-		cancionValida: (->
-			!@get('tituloVacio') && !@get('artistaVacio')
-		).property('tituloVacio', 'artistaVacio')
-	
-		actions:
-			crearCancion: ->
-				return if !@get 'cancionValida'
-			
-				currentId = @get 'currentId'
-				cancion = @store.createRecord 'cancion', 
-				id: currentId
-				titulo: @get('nombreCancion')
+CancionesController = Ember.Controller.extends
+	nombreCancion: ''
+	nombreArtista: ''
+
+	tituloVacio: Ember.computed.empty('nombreCancion')
+	artistaVacio: Ember.computed.empty('nombreArtista')
+
+	cancionValida: (->
+		!@get('tituloVacio') && !@get('artistaVacio')
+	).property('tituloVacio', 'artistaVacio')
+
+	actions:
+		crearCancion: ->
+			return if !@get 'cancionValida'
+		
+			currentId = @get 'currentId'
+			cancion = @store.createRecord 'cancion', 
+				nombre: @get('nombreCancion')
 				artista: @get('nombreArtista')
-				
-				cancion.save()
 			
-				@setProperties
-					currentId: ++currentId
-					nombreArtista: ''
-					nombreCancion: ''
+			cancion.save()
+		
+			@setProperties
+				nombreArtista: ''
+				nombreCancion: ''
 
-	`export default CancionesController`
+`export default CancionesController`
+```
 	
 Información acerca de computed properties [aquí](http://guides.emberjs.com/v1.10.0/object-model/computed-properties/) y sobre obtener propiedades del controlador en funciones [aquí](http://guides.emberjs.com/v1.10.0/object-model/classes-and-instances/)
 
@@ -131,21 +132,18 @@ Aquí se encuentra la definición de la vista, no puedo incluir el código aquí
 
 Aquí está la definición del `CancionController` utilizado en `{{each}}` de la vista
 
+```coffeescript
 	`import Ember from 'ember'`
 
 	CancionController = Ember.Controller.extend
-		needs: 'canciones'
 		isEditing: false
 	
-		currentId: Ember.computed.alias 'controllers.canciones.currentId'
 		text: (->
 			if @get('isEditing') then 'Guardar' else 'Editar'
 		).property('isEditing')
 	
 		actions:
 			eliminarCancion: ->
-				currentId = @get 'currentId'
-				@set('currentId', --currentId) if @get('id') + 1 == currentId
 				@get('model').destroyRecord()
 			
 			editarCancion: ->
@@ -157,5 +155,4 @@ Aquí está la definición del `CancionController` utilizado en `{{each}}` de la
 				
 
 	`export default CancionController`
-	
-Información acerca de `needs` dentro de un controlador [aquí](http://guides.emberjs.com/v1.10.0/controllers/dependencies-between-controllers/)
+```
